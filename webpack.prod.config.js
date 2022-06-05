@@ -1,24 +1,22 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const isDevelopment = process.env.NODE_ENV !== "production";
-
 module.exports = {
-  mode: isDevelopment ? "development" : "production",
-  devtool: isDevelopment ? "eval-source-map" : "source-map",
+  mode: "production",
+  devtool: "source-map",
   entry: {
     main: path.resolve(__dirname, "src/index.jsx"),
-    help: path.resolve(__dirname, "help/index.html"),
+    help: path.resolve(__dirname, "help/help.jsx"),
   },
   output: {
     filename: "[name].bundle.js",
     path: path.resolve(__dirname, "./dist"),
-    publicPath: "",
   },
-  devServer: {
-    static: path.resolve(__dirname, "./dist"),
-    open: true,
-    port: 3000,
+  resolve: {
+    alias: {
+      shared: path.resolve(__dirname, "src/shared"),
+    },
+    extensions: [".js", ".jsx"],
   },
   module: {
     rules: [
@@ -27,21 +25,12 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
-          options: {
-            plugins: [
-              isDevelopment && require.resolve("react-refresh/babel"),
-            ].filter(Boolean),
-          },
         },
       },
       {
-        test: /\.scss$/,
+        test: /\.(scss)$/,
         exclude: /node_modules/,
         use: ["style-loader", "css-loader", "sass-loader"],
-      },
-      {
-        test: /\.html$/i,
-        loader: "html-loader",
       },
     ],
   },
@@ -58,7 +47,7 @@ module.exports = {
       chunks: ["help"],
       title: "Help",
       description: "The Application's user guide static page",
-      template: path.resolve(__dirname, "help/index.html"),
+      template: path.resolve(__dirname, "public/index.html"),
     }),
   ],
 };
